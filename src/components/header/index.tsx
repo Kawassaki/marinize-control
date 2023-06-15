@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Actions, Container, Content, UserInfo } from './styles'
 import marinizeLogo from '../../assets/marinize-logo.svg'
 import Link from 'next/link'
-import { Avatar, Button } from '@kawassaki-ui/react'
+import { Avatar, IconButton } from '@kawassaki-ui/react'
 import { SignIn, SignOut } from 'phosphor-react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useMemo } from 'react'
@@ -26,7 +26,14 @@ export default function Header() {
   return (
     <Container>
       <Content>
-        <Image src={marinizeLogo} quality={100} priority alt="Marinize Logo" />
+        <Link href="/">
+          <Image
+            src={marinizeLogo}
+            quality={100}
+            priority
+            alt="Marinize Logo"
+          />
+        </Link>
         {isSignedIn ? (
           <Actions>
             <Link href="/clientes">Clientes</Link>
@@ -37,14 +44,18 @@ export default function Header() {
         ) : null}
         <UserInfo>
           {!isSignedIn ? (
-            <Button onClick={handleSignIn}>
-              <SignIn size={32} />
-            </Button>
+            <IconButton
+              variant="primary"
+              onClick={handleSignIn}
+              icon={<SignIn />}
+            />
           ) : (
             <>
-              <Button onClick={handleSignOut}>
-                <SignOut size={32} />
-              </Button>
+              <IconButton
+                variant="primary"
+                onClick={handleSignOut}
+                icon={<SignOut />}
+              />
               <Avatar src={session.data?.user.avatar_url} />
             </>
           )}

@@ -7,7 +7,7 @@ export const Container = styled('header', {
 
 export const Content = styled('div', {
   width: '100%',
-  maxWidth: 1120,
+  maxWidth: 1160,
   margin: '0 auto',
   padding: '0 $3',
 

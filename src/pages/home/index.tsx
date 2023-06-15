@@ -3,7 +3,7 @@ import { Container } from './styles'
 export default function Home() {
   return (
     <Container>
-      <h1>Hello World!</h1>
+      <h1>Home!</h1>
     </Container>
   )
 }

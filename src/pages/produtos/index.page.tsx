@@ -5,7 +5,7 @@ import { Cadastro } from './components/cadastro'
 import { MouseEvent, useState } from 'react'
 import { RegisterTableComponent } from './components/table'
 
-export default function Clientes() {
+export default function Produtos() {
   const [showModal, setShowModal] = useState(false)
 
   function handleRegisterClientClick(e: MouseEvent) {
@@ -14,15 +14,17 @@ export default function Clientes() {
   }
 
   return (
-    <Container>
-      <Header>
-        <Heading>Clientes</Heading>
-        <Button onClick={handleRegisterClientClick}>
-          <Plus /> Cadastrar Cliente
-        </Button>
-      </Header>
-      <RegisterTableComponent />
+    <>
+      <Container>
+        <Header>
+          <Heading>Produtos</Heading>
+          <Button onClick={handleRegisterClientClick}>
+            <Plus /> Cadastrar Produtos (F1)
+          </Button>
+        </Header>
+        <RegisterTableComponent />
+      </Container>
       <Cadastro showModal={showModal} setShowModal={setShowModal} />
-    </Container>
+    </>
   )
 }

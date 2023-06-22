@@ -1,4 +1,5 @@
 import { styled } from '@kawassaki-ui/react'
+import Link from 'next/link'
 
 export const Container = styled('header', {
   background: '$gray900',
@@ -26,16 +27,32 @@ export const Actions = styled('div', {
   margin: '$4',
 
   '> a': {
-    color: '$gray200',
     textDecoration: 'none',
     fontFamily: '$default',
     transition: 'color 0.2s ease-out',
-    borderBottom: '2px solid transparent',
 
     '&:hover': {
       color: '$white',
       borderBottom: '2px solid $kawassakiMid',
     },
+  },
+})
+
+export const CustomLink = styled(Link, {
+  variants: {
+    urlActive: {
+      true: {
+        color: '$white',
+        borderBottom: '2px solid $kawassakiMid',
+      },
+      false: {
+        color: '$gray200',
+        borderBottom: '2px solid transparent',
+      },
+    },
+  },
+  defaultVariants: {
+    urlActive: false,
   },
 })
 

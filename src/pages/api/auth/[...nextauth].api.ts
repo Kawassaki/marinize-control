@@ -28,6 +28,7 @@ export function buildNextAuthOptions(
             name: profile.name,
             email: profile.email,
             avatar_url: profile.picture,
+            is_admin: profile.email === 'fekawassaki@gmail.com',
           }
         },
       }),

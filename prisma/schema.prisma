@@ -17,6 +17,7 @@ model User {
   email      String?  @unique
   avatar_url String?
   created_at DateTime @default(now())
+  is_admin   Boolean?
 
   accounts Account[]
   sessions Session[]
@@ -54,4 +55,39 @@ model Session {
 
   @@index([user_id])
   @@map("sessions")
+}
+
+model Supplier {
+  id            String    @id @default(cuid())
+  name          String?
+  legal_name    String?
+  supplier_type String?
+  cnpj          String?   @unique
+  cpf           String?   @unique
+  address       String?
+  products      Product[]
+
+  @@index([id])
+  @@map("suppliers")
+}
+
+model Product {
+  id                   String   @id @default(cuid())
+  referenceCode        Int      @unique @default(autoincrement())
+  name                 String?
+  barcode              String?
+  season               String?
+  size                 String?
+  stock_amount         String?
+  stock_minimum        String?
+  date_collection      DateTime @default(now())
+  price_without_profit String?
+  profit_percentage    String?
+  final_price          String?
+  supplier_id          String   @unique
+
+  supplier Supplier @relation(fields: [supplier_id], references: [id])
+
+  @@index([id])
+  @@map("products")
 }

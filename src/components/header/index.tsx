@@ -1,15 +1,17 @@
 import Image from 'next/image'
-import { Actions, Container, Content, UserInfo } from './styles'
+import { Actions, Container, Content, CustomLink, UserInfo } from './styles'
 import marinizeLogo from '../../assets/marinize-logo.svg'
-import Link from 'next/link'
+
 import { Avatar, IconButton } from '@kawassaki-ui/react'
 import { SignIn, SignOut } from 'phosphor-react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useMemo } from 'react'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 export default function Header() {
   const session = useSession()
-
+  const router = useRouter()
   const isSignedIn = useMemo(
     () => session.status === 'authenticated',
     [session.status],
@@ -22,7 +24,7 @@ export default function Header() {
   async function handleSignOut() {
     await signOut()
   }
-
+  console.log(router.pathname.includes('/fornecedores'))
   return (
     <Container>
       <Content>
@@ -36,10 +38,30 @@ export default function Header() {
         </Link>
         {isSignedIn ? (
           <Actions>
-            <Link href="/clientes">Clientes</Link>
-            <Link href="/fornecedores">Fornecedores</Link>
-            <Link href="/produtos">Produtos</Link>
-            <Link href="/pedido">Pedido</Link>
+            <CustomLink
+              href="/clientes"
+              urlActive={router.pathname.includes('/clientes')}
+            >
+              Clientes
+            </CustomLink>
+            <CustomLink
+              href="/fornecedores"
+              urlActive={router.pathname.includes('/fornecedores')}
+            >
+              Fornecedores
+            </CustomLink>
+            <CustomLink
+              href="/produtos"
+              urlActive={router.pathname.includes('/produtos')}
+            >
+              Produtos
+            </CustomLink>
+            <CustomLink
+              href="/pedido"
+              urlActive={router.pathname.includes('/pedido')}
+            >
+              Pedido
+            </CustomLink>
           </Actions>
         ) : null}
         <UserInfo>

@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react'
+import { ChangeEvent } from 'react'
 import { ZodIssueCode, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -6,11 +6,12 @@ import {
   TextInput,
   Heading,
   RadioButton,
-  Modal,
   Select,
+  Button,
 } from '@kawassaki-ui/react'
-import { Divider } from '../../../../components/divider'
+import { Divider } from '../../../components/divider'
 import {
+  Actions,
   Container,
   FormError,
   FormWrapper,
@@ -27,6 +28,9 @@ import {
   validateSizes,
 } from '@/pages/utils/validators'
 import { fromBRLCurrencyToFloat } from '@/pages/utils/parse'
+import { RegisterBack } from '@/components/registerBack'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const registerProductFormSchema = z.object({
   name: z.string().min(1, 'O nome deve conter pelo menos um caracter!'),
@@ -107,17 +111,15 @@ const registerProductFormSchema = z.object({
 
 type RegisterProductFormProps = z.input<typeof registerProductFormSchema>
 
-export interface CadastroProps {
-  showModal: boolean
-  setShowModal: (showModal: boolean) => void
-}
+export default function Cadastro() {
+  const session = useSession()
+  console.log(session)
+  const router = useRouter()
 
-export function Cadastro({ showModal, setShowModal }: CadastroProps) {
-  const ref = useRef<HTMLDivElement | null>(null)
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, isSubmitting },
     setValue,
     watch,
     reset,
@@ -127,6 +129,10 @@ export function Cadastro({ showModal, setShowModal }: CadastroProps) {
       season: 'inverno',
     },
   })
+
+  async function handleBackAction() {
+    await router.push('/fornecedores')
+  }
 
   function handleSubmitProductForm(data: RegisterProductFormProps) {
     console.log('$$$$', data)
@@ -181,22 +187,12 @@ export function Cadastro({ showModal, setShowModal }: CadastroProps) {
   }
 
   return (
-    <Modal
-      ref={ref}
-      showModal={showModal}
-      onCloseModal={() => setShowModal(false)}
-      size="md"
-      modalTitle="Cadastro de Produto"
-      overlay="medium"
-      isModalWithActions
-      secondaryButtonLabel="Limpar"
-      primaryButtonLabel="Salvar"
-      onSecondaryButtonClick={() => reset()}
-      shouldCloseOnOutsideClick={false}
-      as="form"
-      onSubmit={handleSubmit(handleSubmitProductForm)}
-    >
-      <Container>
+    <Container>
+      <RegisterBack
+        handleButtonClick={handleBackAction}
+        title="Cadastro Produto"
+      />
+      <form onSubmit={handleSubmit(handleSubmitProductForm)}>
         <InfoBlock>
           <Heading size="sm">Informações Básicas</Heading>
           <InputValues flexDirection="column">
@@ -398,7 +394,15 @@ export function Cadastro({ showModal, setShowModal }: CadastroProps) {
             </FormWrapper>
           </InputValues>
         </InfoBlock>
-      </Container>
-    </Modal>
+        <Actions>
+          <Button type="button" variant="secondary" onClick={() => reset()}>
+            Limpar
+          </Button>
+          <Button type="submit" variant="primary">
+            {isSubmitting ? 'Loading...' : 'Salvar'}
+          </Button>
+        </Actions>
+      </form>
+    </Container>
   )
 }

@@ -1,5 +1,5 @@
 import { IconButton, Table, Text } from '@kawassaki-ui/react'
-import { PencilSimple, Trash } from 'phosphor-react'
+import { Trash } from 'phosphor-react'
 import { Actions, CustomModal, ModalContent, TrStyled } from './styles'
 import { useState } from 'react'
 import { api } from '@/lib/axios'
@@ -128,10 +128,6 @@ export function RegisterTableComponent({ id = 'test' }: RegisterTableProps) {
                             onClick={() =>
                               handleDeleteSupplierClick(supplier.id)
                             }
-                          />
-                          <IconButton
-                            icon={<PencilSimple />}
-                            onClick={() => console.log('Edit')}
                           />
                         </Actions>
                       </td>

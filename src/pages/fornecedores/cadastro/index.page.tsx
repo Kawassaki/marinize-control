@@ -1,12 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react'
-import {
-  Text,
-  TextInput,
-  Heading,
-  RadioButton,
-  Button,
-  IconButton,
-} from '@kawassaki-ui/react'
+import { Text, TextInput, RadioButton, Button } from '@kawassaki-ui/react'
 
 import {
   Actions,
@@ -16,12 +9,10 @@ import {
   InfoBlock,
   InputValues,
   RadioButtonArea,
-  Header,
 } from './styles'
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { ArrowLeft } from 'phosphor-react'
 import { supplierType } from './index.types'
 import {
   RegisterSupplierFormPFProps,
@@ -37,6 +28,7 @@ import { AxiosError } from 'axios'
 import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
 import { getServerSession } from 'next-auth'
 import { GetServerSideProps } from 'next'
+import { RegisterBack } from '@/components/registerBack'
 
 export default function Cadastro() {
   const session = useSession()
@@ -116,15 +108,10 @@ export default function Cadastro() {
 
   return (
     <Container>
-      <Header>
-        <IconButton
-          type="button"
-          size="sm"
-          icon={<ArrowLeft />}
-          onClick={handleBackAction}
-        />
-        <Heading>Fornecedores</Heading>
-      </Header>
+      <RegisterBack
+        handleButtonClick={handleBackAction}
+        title="Cadastro Fornecedor"
+      />
       <RadioButtonArea>
         <RadioButton
           name="type"

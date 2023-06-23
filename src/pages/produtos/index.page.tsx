@@ -1,19 +1,19 @@
 import { Heading, Button } from '@kawassaki-ui/react'
 import { Container, Header } from './styles'
 import { Plus } from 'phosphor-react'
-import { Cadastro } from './components/cadastro'
-import { MouseEvent, useState } from 'react'
+
+import { MouseEvent } from 'react'
 import { RegisterTableComponent } from './components/table'
 import { GetServerSideProps } from 'next'
 import { getServerSession } from 'next-auth'
 import { buildNextAuthOptions } from '../api/auth/[...nextauth].api'
+import { useRouter } from 'next/router'
 
 export default function Produtos() {
-  const [showModal, setShowModal] = useState(false)
+  const router = useRouter()
 
-  function handleRegisterClientClick(e: MouseEvent) {
-    e.preventDefault()
-    setShowModal((current) => !current)
+  async function handleRegisterProductClick(e: MouseEvent) {
+    await router.push('/produtos/cadastro')
   }
 
   return (
@@ -21,13 +21,12 @@ export default function Produtos() {
       <Container>
         <Header>
           <Heading>Produtos</Heading>
-          <Button onClick={handleRegisterClientClick}>
-            <Plus /> Cadastrar Produtos (F1)
+          <Button onClick={handleRegisterProductClick}>
+            <Plus /> Cadastrar Produtos
           </Button>
         </Header>
         <RegisterTableComponent />
       </Container>
-      <Cadastro showModal={showModal} setShowModal={setShowModal} />
     </>
   )
 }

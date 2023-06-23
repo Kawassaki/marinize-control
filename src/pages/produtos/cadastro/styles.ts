@@ -1,7 +1,7 @@
 import { Box, Text, styled } from '@kawassaki-ui/react'
 
 export const Container = styled(Box, {
-  margin: '0 auto',
+  margin: '$4 auto',
   maxWidth: 1160,
   padding: '$4',
   display: 'flex',
@@ -12,6 +12,9 @@ export const Container = styled(Box, {
     p: {
       color: '$gray200',
     },
+  },
+  form: {
+    padding: '$4',
   },
 })
 
@@ -29,6 +32,7 @@ export const InfoBlock = styled('div', {
   gap: '$4',
   alignItems: 'flex-start',
   justifyContent: 'baseline',
+  padding: '$4 0',
 })
 
 export const InputValues = styled('div', {
@@ -89,4 +93,13 @@ export const FormWrapper = styled('label', {
 
 export const FormError = styled(Text, {
   color: '$dangerLight',
+})
+
+export const Actions = styled('div', {
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  gap: '$4',
+  width: '100%',
 })

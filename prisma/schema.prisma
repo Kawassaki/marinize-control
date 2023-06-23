@@ -67,7 +67,6 @@ model Supplier {
   address       String?
   products      Product[]
 
-  @@index([id])
   @@map("suppliers")
 }
 
@@ -85,9 +84,8 @@ model Product {
   profit_percentage    String?
   final_price          String?
   supplier_id          String   @unique
+  supplier             Supplier @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
 
-  supplier Supplier @relation(fields: [supplier_id], references: [id])
-
-  @@index([id])
+  @@index([supplier_id])
   @@map("products")
 }

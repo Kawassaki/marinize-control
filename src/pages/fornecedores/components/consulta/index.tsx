@@ -10,6 +10,7 @@ import { getServerSession } from 'next-auth'
 import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
 import { errorToast, successToast } from '@/components/toast'
 import { AxiosError } from 'axios'
+import useDidMount from '@rooks/use-did-mount'
 
 export interface RegisterTableProps {
   id?: string
@@ -44,23 +45,30 @@ const Thead = () => {
 }
 
 export function RegisterTableComponent({ id = 'test' }: RegisterTableProps) {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [supplierSelected, setSupplierSelected] = useState<string | null>(null)
 
+  const userId = session?.user?.id
+
   const { refetch, data, isLoading } = useQuery<Suppliers>(
-    ['suppliers', session],
+    ['suppliers', userId],
     async () => {
-      if (status !== 'loading') {
-        const response = await api.get(`/suppliers`, {
-          params: { userId: session?.user?.id },
-        })
-        return response.data
-      } else {
-        return []
-      }
+      const response = await api.get(`/suppliers`, {
+        params: { userId },
+      })
+      return response.data
+    },
+    {
+      enabled: !!userId,
+      staleTime: 10 * (60 * 1000),
+      cacheTime: 30 * (60 * 1000),
     },
   )
+
+  useDidMount(() => {
+    refetch()
+  })
 
   function handleDeleteSupplierClick(supplierId: string) {
     setSupplierSelected(supplierId)
@@ -78,8 +86,8 @@ export function RegisterTableComponent({ id = 'test' }: RegisterTableProps) {
       .then(async (item) => {
         if (item.status === 200) {
           successToast('Fornecedor excluido com successo!')
-          setShowDeleteModal(false)
           refetch()
+          setShowDeleteModal(false)
         }
       })
       .catch((err) => {

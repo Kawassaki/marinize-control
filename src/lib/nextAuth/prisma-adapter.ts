@@ -13,6 +13,7 @@ export function PrismaAdapter(
           name: user.name,
           email: user.email,
           avatar_url: user.avatar_url,
+          is_admin: process.env.ADMIN_EMAILS?.split('|').includes(user.email),
         },
       })
 

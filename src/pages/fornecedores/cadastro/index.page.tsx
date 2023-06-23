@@ -34,6 +34,9 @@ import { CreateSupplierProps } from '@/pages/api/suppliers/create.api'
 import { api } from '@/lib/axios'
 import { errorToast, successToast } from '@/components/toast'
 import { AxiosError } from 'axios'
+import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
+import { getServerSession } from 'next-auth'
+import { GetServerSideProps } from 'next'
 
 export default function Cadastro() {
   const session = useSession()
@@ -74,9 +77,10 @@ export default function Cadastro() {
             userId: session.data?.user?.id,
             supplier,
           })
-          .then((item) => {
+          .then(async (item) => {
             if (item.status === 201) {
               successToast('Fornecedor criado com sucesso!')
+              handleBackAction()
             }
           })
       }
@@ -253,4 +257,25 @@ export default function Cadastro() {
       ) : null}
     </Container>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(
+    req,
+    res,
+    buildNextAuthOptions(req, res),
+  )
+  if (!session?.user.is_admin) {
+    return {
+      redirect: {
+        permanent: true,
+        destination: '/',
+      },
+    }
+  }
+  return {
+    props: {
+      session,
+    },
+  }
 }

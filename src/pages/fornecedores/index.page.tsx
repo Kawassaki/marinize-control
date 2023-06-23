@@ -5,6 +5,9 @@ import { Plus } from 'phosphor-react'
 import { MouseEvent } from 'react'
 import { RegisterTableComponent } from './components/consulta'
 import { useRouter } from 'next/router'
+import { buildNextAuthOptions } from '../api/auth/[...nextauth].api'
+import { getServerSession } from 'next-auth'
+import { GetServerSideProps } from 'next'
 
 export default function Fornecedores() {
   const router = useRouter()
@@ -24,4 +27,25 @@ export default function Fornecedores() {
       <RegisterTableComponent />
     </Container>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(
+    req,
+    res,
+    buildNextAuthOptions(req, res),
+  )
+  if (!session?.user.is_admin) {
+    return {
+      redirect: {
+        permanent: true,
+        destination: '/',
+      },
+    }
+  }
+  return {
+    props: {
+      session,
+    },
+  }
 }

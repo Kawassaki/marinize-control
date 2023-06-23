@@ -24,7 +24,6 @@ export default function Header() {
   async function handleSignOut() {
     await signOut()
   }
-  console.log(router.pathname.includes('/fornecedores'))
   return (
     <Container>
       <Content>

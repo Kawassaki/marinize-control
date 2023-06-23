@@ -92,9 +92,6 @@ export function RegisterTableComponent({ id = 'test' }: RegisterTableProps) {
       })
   }
 
-  if (status === 'loading') {
-    return 'Loading...'
-  }
   return (
     <>
       {!isLoading ? (
@@ -145,7 +142,7 @@ export function RegisterTableComponent({ id = 'test' }: RegisterTableProps) {
           id={id}
         />
       ) : (
-        'Loading...'
+        <>Loading...</>
       )}
       <CustomModal
         showModal={showDeleteModal}

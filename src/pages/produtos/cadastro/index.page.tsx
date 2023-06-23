@@ -119,7 +119,7 @@ export default function Cadastro() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isSubmitting },
     setValue,
     watch,
     reset,

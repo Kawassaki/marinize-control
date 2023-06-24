@@ -157,8 +157,8 @@ export default function Cadastro() {
       cacheTime: 30 * (60 * 1000),
     },
   )
-  useDidMount(() => {
-    refetch()
+  useDidMount(async () => {
+    await refetch()
   })
 
   useDidUpdate(() => {

@@ -38,12 +38,6 @@ export default function Header() {
         {isSignedIn ? (
           <Actions>
             <CustomLink
-              href="/clientes"
-              urlActive={router.pathname.includes('/clientes')}
-            >
-              Clientes
-            </CustomLink>
-            <CustomLink
               href="/fornecedores"
               urlActive={router.pathname.includes('/fornecedores')}
             >
@@ -54,12 +48,6 @@ export default function Header() {
               urlActive={router.pathname.includes('/produtos')}
             >
               Produtos
-            </CustomLink>
-            <CustomLink
-              href="/pedido"
-              urlActive={router.pathname.includes('/pedido')}
-            >
-              Pedido
             </CustomLink>
           </Actions>
         ) : null}

@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { ZodIssueCode, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -40,7 +40,6 @@ import { errorToast, successToast } from '@/components/toast'
 import { AxiosError } from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import { Suppliers } from '@/pages/fornecedores/components/consulta'
-import useDidUpdate from '@rooks/use-did-update'
 import { supplierType } from '@/pages/fornecedores/cadastro/index.types'
 import useDidMount from '@rooks/use-did-mount'
 
@@ -161,7 +160,7 @@ export default function Cadastro() {
     await refetch()
   })
 
-  useDidUpdate(() => {
+  useEffect(() => {
     if (data?.suppliers)
       setSupplierOptions(
         data?.suppliers.map((supplier) => {

@@ -42,6 +42,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Suppliers } from '@/pages/fornecedores/components/consulta'
 import useDidUpdate from '@rooks/use-did-update'
 import { supplierType } from '@/pages/fornecedores/cadastro/index.types'
+import useDidMount from '@rooks/use-did-mount'
 
 const registerProductFormSchema = z.object({
   name: z.string().min(1, 'O nome deve conter pelo menos um caracter!'),
@@ -142,7 +143,7 @@ export default function Cadastro() {
 
   const router = useRouter()
 
-  const { data } = useQuery<Suppliers>(
+  const { data, refetch } = useQuery<Suppliers>(
     ['suppliers', userId],
     async () => {
       const response = await api.get(`/suppliers`, {
@@ -156,9 +157,11 @@ export default function Cadastro() {
       cacheTime: 30 * (60 * 1000),
     },
   )
+  useDidMount(() => {
+    refetch()
+  })
 
   useDidUpdate(() => {
-    console.log(data?.suppliers)
     if (data?.suppliers)
       setSupplierOptions(
         data?.suppliers.map((supplier) => {

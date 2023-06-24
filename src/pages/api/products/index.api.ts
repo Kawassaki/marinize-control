@@ -45,11 +45,7 @@ export default async function handler(
       size: true,
       stock_amount: true,
       stock_minimum: true,
-      supplier: {
-        select: {
-          name: true,
-        },
-      },
+      supplier: true,
     },
   })
 

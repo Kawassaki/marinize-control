@@ -28,7 +28,15 @@ export interface ProductProps {
   size: string
   stock_amount: string
   stock_minimum: string
-  supplier: { name: string }
+  supplier: {
+    id: string
+    name: string
+    legal_name: string
+    supplier_type: string
+    cnpj: string
+    cpf: string
+    address: string
+  }
 }
 
 export interface Products {
@@ -38,7 +46,6 @@ export interface Products {
 const Thead = () => {
   return (
     <tr>
-      <th></th>
       <th>Codigo de Referência</th>
       <th>Codigo de Barras</th>
       <th>Nome</th>
@@ -51,6 +58,7 @@ const Thead = () => {
       <th>Estoque Minimo</th>
       <th>Estoque Atual</th>
       <th>Fornecedor</th>
+      <th></th>
     </tr>
   )
 }
@@ -121,14 +129,6 @@ export function TableComponent({ id = 'test' }: RegisterTableProps) {
               data.products.map((product) => {
                 return (
                   <TrStyled key={product.id}>
-                    <td>
-                      <Actions>
-                        <IconButton
-                          icon={<Trash />}
-                          onClick={() => handleDeleteProductClick(product.id)}
-                        />
-                      </Actions>
-                    </td>
                     <td>{product.reference_code || '-'}</td>
                     <td>{product.barcode || '-'}</td>
                     <td>{product.name || '-'}</td>
@@ -144,7 +144,19 @@ export function TableComponent({ id = 'test' }: RegisterTableProps) {
                     </td>
                     <td>{product.stock_minimum || '-'}</td>
                     <td>{product.stock_amount || '-'}</td>
-                    <td>{product.supplier.name || '-'}</td>
+                    <td>
+                      {product.supplier.name ||
+                        product.supplier.legal_name ||
+                        '-'}
+                    </td>
+                    <td>
+                      <Actions>
+                        <IconButton
+                          icon={<Trash />}
+                          onClick={() => handleDeleteProductClick(product.id)}
+                        />
+                      </Actions>
+                    </td>
                   </TrStyled>
                 )
               })

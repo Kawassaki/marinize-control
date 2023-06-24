@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { ZodIssueCode, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -31,6 +31,16 @@ import { fromBRLCurrencyToFloat } from '@/pages/utils/parse'
 import { RegisterBack } from '@/components/registerBack'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
+import { getServerSession } from 'next-auth'
+import { GetServerSideProps } from 'next'
+import { CreateProductProps } from '@/pages/api/products/create.api'
+import { api } from '@/lib/axios'
+import { errorToast, successToast } from '@/components/toast'
+import { AxiosError } from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import { Suppliers } from '@/pages/fornecedores/components/consulta'
+import useDidUpdate from '@rooks/use-did-update'
 
 const registerProductFormSchema = z.object({
   name: z.string().min(1, 'O nome deve conter pelo menos um caracter!'),
@@ -47,7 +57,7 @@ const registerProductFormSchema = z.object({
   season: z.string(),
   dateCollection: z.string().transform((stringDate, ctx) => {
     const [day, month, year] = stringDate.split('/')
-    const date = new Date(Number(year), Number(month), Number(day))
+    const date = new Date(Number(year), Number(month) - 1, Number(day))
     if (!validateDate(date)) {
       ctx.addIssue({
         code: ZodIssueCode.custom,
@@ -58,11 +68,17 @@ const registerProductFormSchema = z.object({
   }),
   stockMinimum: z.string().min(0),
   stockAmount: z.string().min(0),
-  supplier: z.object({
-    value: z.string(),
-    key: z.string(),
-    selected: z.boolean(),
-  }),
+  supplier: z.object(
+    {
+      value: z.string(),
+      key: z.string(),
+      selected: z.boolean(),
+    },
+    { required_error: 'O fornecedor é obrigatório' },
+  ),
+  referenceCode: z
+    .string()
+    .min(1, 'O código de referencia deve conter pelo menos um caracter!'),
   barcode: z
     .string()
     .min(1, 'O código de barras deve conter pelo menos um caracter!'),
@@ -75,7 +91,7 @@ const registerProductFormSchema = z.object({
       if (!validateCurrencyPattern(value)) {
         ctx.addIssue({
           code: ZodIssueCode.custom,
-          message: 'O formato do preço está incorreto! (ex: 100.00)',
+          message: 'O formato do preço está incorreto! (ex: 49,90)',
         })
       }
       return value
@@ -102,7 +118,7 @@ const registerProductFormSchema = z.object({
       if (!validateCurrencyPattern(value)) {
         ctx.addIssue({
           code: ZodIssueCode.custom,
-          message: 'O formato do preço está incorreto! (ex: 100.00)',
+          message: 'O formato do preço está incorreto! (ex: 49,90)',
         })
       }
       return value
@@ -111,10 +127,45 @@ const registerProductFormSchema = z.object({
 
 type RegisterProductFormProps = z.input<typeof registerProductFormSchema>
 
+interface OptionItem {
+  value: string
+  key: string
+  selected: boolean
+}
+
 export default function Cadastro() {
-  const session = useSession()
-  console.log(session)
+  const { data: session } = useSession()
+  const [suppliersOptions, setSupplierOptions] = useState<OptionItem[]>()
+
+  const userId = session?.user?.id
+
   const router = useRouter()
+
+  const { data } = useQuery<Suppliers>(
+    ['suppliers', userId],
+    async () => {
+      const response = await api.get(`/suppliers`, {
+        params: { userId },
+      })
+      return response.data
+    },
+    {
+      enabled: !!userId,
+      staleTime: 10 * (60 * 1000),
+      cacheTime: 30 * (60 * 1000),
+    },
+  )
+
+  useDidUpdate(() => {
+    if (data?.suppliers)
+      setSupplierOptions(
+        data?.suppliers.map((supplier) => ({
+          value: supplier.name,
+          key: supplier.id,
+          selected: false,
+        })),
+      )
+  }, [data])
 
   const {
     register,
@@ -131,11 +182,46 @@ export default function Cadastro() {
   })
 
   async function handleBackAction() {
-    await router.push('/fornecedores')
+    await router.push('/produtos')
   }
 
-  function handleSubmitProductForm(data: RegisterProductFormProps) {
-    console.log('$$$$', data)
+  async function handleSubmitProductForm(data: RegisterProductFormProps) {
+    const newProduct: CreateProductProps = {
+      barcode: data.barcode,
+      date_collection: data.dateCollection,
+      final_price: data.finalPrice,
+      name: data.name,
+      price_without_profit: data.priceWithoutProfit,
+      profit_percentage: data.profitPercentage,
+      reference_code: data.referenceCode,
+      season: data.season,
+      size: data.size,
+      stock_amount: data.stockAmount,
+      stock_minimum: data.stockMinimum,
+      supplier_id: data.supplier.key,
+    }
+    try {
+      if (session?.user?.is_admin) {
+        await api
+          .post('/products/create', {
+            userId: session?.user?.id,
+            product: newProduct,
+          })
+          .then(async (item) => {
+            if (item.status === 201) {
+              successToast('Produto criado com sucesso!')
+              handleBackAction()
+            }
+          })
+      }
+    } catch (err) {
+      if (err instanceof AxiosError && err?.response?.data?.message)
+        errorToast(err.response.data.message)
+      else
+        errorToast(
+          'Não foi possível cadastrar o fornecedor entre em contato com o suporte',
+        )
+    }
   }
 
   const watchPriceWithoutProfit = watch('priceWithoutProfit')
@@ -220,10 +306,6 @@ export default function Cadastro() {
                 {errors.size.message}
               </FormError>
             ) : null}
-            {/* <FormWrapper>
-              <Text>Fornecedor</Text>
-              <TextInput />
-            </FormWrapper> */}
             <FormWrapper>
               <Text>Código de barras</Text>
               <TextInput
@@ -236,6 +318,18 @@ export default function Cadastro() {
                 {errors.barcode.message}
               </FormError>
             ) : null}
+            <FormWrapper>
+              <Text>Código de referência</Text>
+              <TextInput
+                placeholder="Digite o código de referência"
+                {...register('referenceCode')}
+              />
+            </FormWrapper>
+            {errors.referenceCode ? (
+              <FormError as="span" size="sm">
+                {errors.referenceCode.message}
+              </FormError>
+            ) : null}
           </InputValues>
         </InfoBlock>
         <Divider />
@@ -245,19 +339,15 @@ export default function Cadastro() {
             <FormWrapper>
               <Text>Selecione o Fornecedor</Text>
               <Select
-                options={[
-                  { value: 'Selecione', key: '', selected: false },
-                  {
-                    value: 'Fornecedor 1',
-                    key: 'id fornecedor 1',
-                    selected: false,
-                  },
-                  {
-                    value: 'Fornecedor 2',
-                    key: 'id fornecedor 2',
-                    selected: false,
-                  },
-                ]}
+                options={
+                  suppliersOptions || [
+                    {
+                      value: 'Nenhum fornecedor cadastrado',
+                      key: 'none',
+                      selected: false,
+                    },
+                  ]
+                }
                 onSelectOption={(item) => setValue('supplier', item)}
               />
               {errors.supplier ? (
@@ -405,4 +495,25 @@ export default function Cadastro() {
       </form>
     </Container>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(
+    req,
+    res,
+    buildNextAuthOptions(req, res),
+  )
+  if (!session?.user.is_admin) {
+    return {
+      redirect: {
+        permanent: true,
+        destination: '/',
+      },
+    }
+  }
+  return {
+    props: {
+      session,
+    },
+  }
 }

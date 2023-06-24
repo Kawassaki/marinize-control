@@ -1,6 +1,6 @@
 export function validateCurrencyPattern(text: string) {
   // BRL currency pattern regex
-  const brlCurrencyPattern = /^(\d{1,3}(\.\d{3})*|\d+)(,\d{2})?$/
+  const brlCurrencyPattern = /^\d{1,3}(,\d{2})$/
 
   return brlCurrencyPattern.test(text.replace('.', ','))
 }

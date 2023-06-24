@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Text, TextInput, RadioButton, Button } from '@kawassaki-ui/react'
 
 import {
@@ -86,11 +86,11 @@ export default function Cadastro() {
     }
   }
 
-  function handlePFChange(e: ChangeEvent) {
+  function handlePFChange() {
     setType(supplierType.PF)
   }
 
-  function handlePJChange(e: ChangeEvent) {
+  function handlePJChange() {
     setType(supplierType.PJ)
   }
 

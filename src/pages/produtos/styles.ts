@@ -1,8 +1,7 @@
 import { styled, Box } from '@kawassaki-ui/react'
 
 export const Container = styled(Box, {
-  margin: '$10 auto',
-  maxWidth: 1160,
+  margin: '$10',
   padding: '$4',
   marginTop: '$6',
   display: 'flex',

@@ -26,7 +26,7 @@ interface Supplier {
   address: string
 }
 
-interface Suppliers {
+export interface Suppliers {
   suppliers?: Supplier[]
 }
 

@@ -72,7 +72,7 @@ model Supplier {
 
 model Product {
   id                   String   @id @default(cuid())
-  referenceCode        Int      @unique @default(autoincrement())
+  reference_code       String
   name                 String?
   barcode              String?
   season               String?

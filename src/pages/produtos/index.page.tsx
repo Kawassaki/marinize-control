@@ -3,7 +3,7 @@ import { Container, Header } from './styles'
 import { Plus } from 'phosphor-react'
 
 import { MouseEvent } from 'react'
-import { RegisterTableComponent } from './components/table'
+import { TableComponent } from './components/table'
 import { GetServerSideProps } from 'next'
 import { getServerSession } from 'next-auth'
 import { buildNextAuthOptions } from '../api/auth/[...nextauth].api'
@@ -25,7 +25,7 @@ export default function Produtos() {
             <Plus /> Cadastrar Produtos
           </Button>
         </Header>
-        <RegisterTableComponent />
+        <TableComponent />
       </Container>
     </>
   )

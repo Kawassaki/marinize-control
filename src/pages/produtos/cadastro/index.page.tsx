@@ -41,6 +41,7 @@ import { AxiosError } from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import { Suppliers } from '@/pages/fornecedores/components/consulta'
 import useDidUpdate from '@rooks/use-did-update'
+import { supplierType } from '@/pages/fornecedores/cadastro/index.types'
 
 const registerProductFormSchema = z.object({
   name: z.string().min(1, 'O nome deve conter pelo menos um caracter!'),
@@ -157,13 +158,24 @@ export default function Cadastro() {
   )
 
   useDidUpdate(() => {
+    console.log(data?.suppliers)
     if (data?.suppliers)
       setSupplierOptions(
-        data?.suppliers.map((supplier) => ({
-          value: supplier.name,
-          key: supplier.id,
-          selected: false,
-        })),
+        data?.suppliers.map((supplier) => {
+          if (supplier.supplier_type === supplierType.PF) {
+            return {
+              value: supplier.name,
+              key: supplier.id,
+              selected: false,
+            }
+          } else {
+            return {
+              value: supplier.legal_name,
+              key: supplier.id,
+              selected: false,
+            }
+          }
+        }),
       )
   }, [data])
 
@@ -258,6 +270,7 @@ export default function Cadastro() {
   }
 
   const handleFinalPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log('gere?')
     const finalPrice = e.target.value
 
     setValue('finalPrice', finalPrice, { shouldValidate: true })
